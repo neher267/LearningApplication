@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.neher.ecl.learningapplication.MainActivity"
+    android:orientation="vertical"
+    android:padding="15dp"
+    android:gravity="bottom"
+    android:background="@drawable/background">
+
+
+    <Button
+        android:id="@+id/login_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Worm Up Test"
+        android:layout_gravity="center"
+        android:background="@color/colorAccent"
+        android:shadowRadius="@android:integer/config_mediumAnimTime"/>
+
+
+</LinearLayout>
