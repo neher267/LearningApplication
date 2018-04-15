@@ -7,19 +7,59 @@
     tools:context="com.neher.ecl.learningapplication.MainActivity"
     android:orientation="vertical"
     android:padding="15dp"
-    android:gravity="bottom"
+    android:gravity="center_vertical"
     android:background="@drawable/background">
 
-
-    <Button
-        android:id="@+id/login_id"
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_vie1w"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Worm Up Test"
+        card_view:cardCornerRadius="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        >
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/question_id"
+            android:layout_gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Are you ready?"
+            android:textStyle="bold"
+            android:padding="15dp"/>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_vie2"
         android:layout_gravity="center"
-        android:background="@color/colorAccent"
-        android:shadowRadius="@android:integer/config_mediumAnimTime"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        >
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/worm_up_btn"
+            android:layout_gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="WORM UP TEST"
+            android:textStyle="bold"
+            android:textColor="@color/txtColor"
+            android:background="@color/btn_color"
+            android:padding="15dp"/>
+    </android.support.v7.widget.CardView>
+
+
+
 
 
 </LinearLayout>

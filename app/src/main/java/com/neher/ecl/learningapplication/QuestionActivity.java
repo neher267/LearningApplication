@@ -29,28 +29,17 @@ import java.util.ArrayList;
 public class QuestionActivity extends AppCompatActivity implements View.OnClickListener{
 
 
-    private Button continue_btn;
-    private Button login_btn;
-
+    private TextView continue_btn;
     private RadioButton option_1;
     private RadioButton option_2;
     private RadioButton option_3;
     private RadioButton option_4;
 
     private TextView question;
-    private TextView result;
-
-    private Question nextQuestion;
-
-    private ArrayList<Question> questions = new ArrayList<>();
-
-    private ArrayList<Question> questionList = new ArrayList<>();
     private QuestionDB questionDB;
+    private Cursor cursor;
 
-    private RequestQueue requestQueue;
-
-    private static final String TAG = "MainActivity";
-    private String url = "http://192.168.0.196/learning-game/public/json";
+    private static final String TAG = "QuestionActivity";
 
 
     @Override
@@ -58,28 +47,19 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
 
-        requestQueue = Volley.newRequestQueue(this);
         question = findViewById(R.id.question_id);
         option_1 = findViewById(R.id.option_1);
         option_2 = findViewById(R.id.option_2);
         option_3 = findViewById(R.id.option_3);
         option_4 = findViewById(R.id.option_4);
         continue_btn = findViewById(R.id.continue_id);
-        login_btn = findViewById(R.id.login_id);
 
         option_1.setOnClickListener(this);
         option_2.setOnClickListener(this);
         option_3.setOnClickListener(this);
         option_4.setOnClickListener(this);
         continue_btn.setOnClickListener(this);
-        login_btn.setOnClickListener(this);
-        result = findViewById(R.id.result);
-        Toast.makeText(this, "ok", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "ok");
-        questions = Question.getQuestions();
-        startGame(questions);
-        nextQuestion = questions.get(1);
-        nextQuestion(nextQuestion);
+
         questionDB = new QuestionDB(this);
         questionDB.getWritableDatabase();
 
@@ -89,135 +69,76 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         if(view.getId() == R.id.option_1){
             Log.d(TAG, "Option one is clicked");
-            showDialog("ok");
-
+            checkResult("a");
+            option_1.setChecked(false);
+            nextQuestion();
 
         }else if(view.getId() == R.id.option_2){
             Log.d(TAG, "Option two is clicked");
-
+            checkResult("b");
+            option_2.setChecked(false);
+            nextQuestion();
 
         }else if(view.getId() == R.id.option_3){
             Log.d(TAG, "Option three is clicked");
+            checkResult("c");
+            option_3.setChecked(false);
+            nextQuestion();
 
 
         }else if(view.getId() == R.id.option_4){
             Log.d(TAG, "Option fore is clicked");
-
-
-        }else if(view.getId() == R.id.login_id){
-            Log.d(TAG, "Login button is clicked");
-            //Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(QuestionActivity.this, LoginActivity.class));
-
+            checkResult("d");
+            option_4.setChecked(false);
+            nextQuestion();
 
         }else if(view.getId() == R.id.continue_id){
             Log.d(TAG, "Option continue button is clicked");
-            //ArrayList<Question> questions =  jsonParse();
-
-            final Cursor questions = questionDB.index();
-
-            if (questions.getCount()>0)
-            {
-                Toast.makeText(this,  String.valueOf(questions.getCount()), Toast.LENGTH_SHORT).show();
-                Log.d(TAG, String.valueOf(questions.getCount()));
-
-            }
-            else {
-                Log.d(TAG, "There is now row");
-            }
-
-            while (questions.moveToNext())
-            {
-                new Thread(new Runnable() {
-                    public void run() {
-
-                    }
-                }).start();
-
-
-                showDialog("he he");
-                Log.d(TAG, questions.getString(2));
-                Toast.makeText(this,  questions.getString(2), Toast.LENGTH_SHORT).show();
-            }
-
-            //jsonParse();
-
-            //nextQuestion(questions.get(2));
+            nextQuestion();
         }
     }
 
-    public void jsonParse()
+    public void nextQuestion()
     {
-        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+        cursor = questionDB.getQuestion();
 
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray jsonArray = response.getJSONArray("data");
-                            for (int i = 0; i<jsonArray.length(); i++)
-                            {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+        if (cursor.moveToFirst()) {
+            questionDB.update(cursor.getInt(0));
+            String qsn = cursor.getString(cursor.getColumnIndex(QuestionDB.COL_QUESTION));
+            question.setText(qsn);
+            option_1.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_A)));
+            option_2.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_B)));
+            option_3.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_C)));
+            option_4.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_D)));
 
-                                String qus = jsonObject.getString("question");
-                                String sub = jsonObject.getString("subject");
-                                String option_1 = jsonObject.getString("a");
-                                String option_2 = jsonObject.getString("b");
-                                String option_3 = jsonObject.getString("c");
-                                String option_4 = jsonObject.getString("d");
-                                String ans = jsonObject.getString("ans");
-
-                                int weight = jsonObject.getInt("weight");
-
-                                //result.append(qus + " "+ ans +" "+weight);
-                                Question question = new Question(qus, sub, option_1, option_2, option_3,option_4, ans,weight);
-                                questionList.add(question);
-                                questionDB.store(question);
-                                Log.d(TAG, question.getQuestion());
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-        requestQueue.add(objectRequest);
-    }
-
-    public void startGame(ArrayList<Question> questions){
-
-        for(Question item : questions){
-            question.setText("Q: "+item.getQuestion());
-            option_1.setText(item.getOption_1());
-            option_2.setText(item.getOption_2());
-            option_3.setText(item.getOption_3());
-            option_4.setText(item.getOption_4());
+            Log.d(TAG, qsn);
         }
-
+        else {
+            Log.d(TAG, "There is now row");
+        }
     }
 
-    public void nextQuestion(Question item){
-        question.setText(item.getQuestion());
-        option_1.setText(item.getOption_1());
-        option_2.setText(item.getOption_2());
-        option_3.setText(item.getOption_3());
-        option_4.setText(item.getOption_4());
+
+
+    public void checkResult(String user_ans){
+        Log.d(TAG, user_ans);
+        String ans = cursor.getString(cursor.getColumnIndex(QuestionDB.COL_ANS));
+        Log.d(TAG, ans);
+        if(ans.equals(user_ans))
+        {
+            showDialog("Great!", "Your answer is correct");
+            nextQuestion();
+        }
+        else{
+            showDialog("Opps","Your answer is wrong!");
+            nextQuestion();
+        }
     }
 
-    public void checkResult(){
-
-    }
-
-    public void showDialog(String message){
+    public void showDialog(String title, String message){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Great!");
+        builder.setTitle(title);
         builder.setMessage(message);
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             @Override

@@ -3,6 +3,8 @@ package com.neher.ecl.learningapplication;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -33,11 +35,15 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -321,20 +327,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mPassword;
 
 
-
         UserLoginTask(String mobile, String password) {
             mMobile = mobile;
             mPassword = password;
+
+            Log.d(TAG, mMobile+mPassword);
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            StringRequest loginRequest = new StringRequest(Request.Method.POST, Settings.LOGIN_URL,
+
+            StringRequest loginRequest = new StringRequest(Request.Method.POST, Env.LOGIN_URL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Log.d(TAG, response);
+                            try {
+                                JSONObject object = new JSONObject(response);
+                                Log.d(TAG, object.getString("access_token"));
+                                Context context = getApplicationContext();
+                                SharedPreferences sharedPref = context.getSharedPreferences(Env.USER_INFO_SHARD_PRE, MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("access_token", "Bearer "+object.getString("access_token"));
+                                editor.commit();
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
                         }
                     },
                     new Response.ErrorListener() {
@@ -349,9 +369,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         protected Map<String, String> getParams() throws AuthFailureError {
                             Map<String,String> params = new HashMap<String, String>();
 
-                            params.put("grant_type", Settings.GRANT_TYPE);
-                            params.put("client_id", Settings.CLINT_ID);
-                            params.put("client_secret", Settings.CLINT_SECTET);
+                            params.put("grant_type", Env.GRANT_TYPE);
+                            params.put("client_id", Env.CLINT_ID);
+                            params.put("client_secret", Env.CLINT_SECRET);
                             params.put("username", mMobile);
                             params.put("password", mPassword);
                             params.put("scope", "*");

@@ -15,11 +15,12 @@ public class QuestionDB extends SQLiteOpenHelper {
 
     private static final String TAG = "QuestionDB";
 
-    static final int VERSION = 1;
+    static final int VERSION = 2;
     static final String DB_NAME = "learning";
     static final String TABLE_NAME = "questions";
     static final String COL_ID = "_id";
     static final String COL_SUB = "sub";
+
     static final String COL_QUESTION = "question";
     static final String COL_OPTION_A = "option_a";
     static final String COL_OPTION_B = "option_b";
@@ -27,6 +28,7 @@ public class QuestionDB extends SQLiteOpenHelper {
     static final String COL_OPTION_D = "option_d";
     static final String COL_ANS = "ans";
     static final String COL_WEIGHT = "col_weight";
+    static final String COL_STATUS = "col_status";
 
     private final String SQL_CREATE_TABLE = "CREATE TABLE "+TABLE_NAME+"("
             +COL_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -36,8 +38,9 @@ public class QuestionDB extends SQLiteOpenHelper {
             +COL_OPTION_B+" VARCHAR, "
             +COL_OPTION_C+" VARCHAR, "
             +COL_OPTION_D+" VARCHAR, "
-            +COL_ANS+" INTEGER, "
-            +COL_WEIGHT+" INTEGER);";
+            +COL_ANS+" VARCHAR, "
+            +COL_WEIGHT+" INTEGER, "
+            +COL_STATUS+" BOOLEAN);";
 
     private final String ALL_QSNS = "SELECT * FROM "+TABLE_NAME+" WHERE "+COL_WEIGHT+" > 0";
 
@@ -70,6 +73,14 @@ public class QuestionDB extends SQLiteOpenHelper {
         return result;
     }
 
+    public Cursor getQuestion()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        //Cursor cursors = db.rawQuery("SELECT * FROM TABLE_NAME WHERE COL_STATUS = false Limit 1", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME+ " WHERE " +COL_STATUS+ " = 1 Limit 1", null);
+        return cursor;
+    }
+
     public long store(Question question){
 
         ContentValues contentValues = new ContentValues();
@@ -81,6 +92,7 @@ public class QuestionDB extends SQLiteOpenHelper {
         contentValues.put(QuestionDB.COL_OPTION_D, question.getOption_4());
         contentValues.put(QuestionDB.COL_ANS, question.getAns());
         contentValues.put(QuestionDB.COL_WEIGHT, question.getWeight());
+        contentValues.put(QuestionDB.COL_STATUS, question.getStatus());
 
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         long id = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
@@ -88,5 +100,16 @@ public class QuestionDB extends SQLiteOpenHelper {
         Log.d(TAG, id+": "+question.getQuestion());
 
         return id;
+    }
+
+    public void update(int id)
+    {
+        String row =String.valueOf(id);
+        ContentValues cv = new ContentValues();
+        cv.put(COL_STATUS, false);
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        long row_id = sqLiteDatabase.update(TABLE_NAME, cv, COL_ID+" = ?", new String[]{row});
+
+        Log.d(TAG, "Update row: "+row_id);
     }
 }

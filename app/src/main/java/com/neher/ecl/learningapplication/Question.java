@@ -15,8 +15,9 @@ public class Question {
     private String option_4;
     private String ans;
     private int weight;
+    private boolean status;
 
-    public Question(String question, String subject, String option_1, String option_2, String option_3, String option_4, String ans, int weight){
+    public Question(String question, String subject, String option_1, String option_2, String option_3, String option_4, String ans, int weight, boolean status){
         this.question = question;
         this.subject = subject;
         this.option_1 = option_1;
@@ -25,6 +26,7 @@ public class Question {
         this.option_4 = option_4;
         this.ans = ans;
         this.weight = weight;
+        this.status = status;
     }
 
     public String getQuestion(){
@@ -51,17 +53,7 @@ public class Question {
     public int getWeight(){
         return weight;
     }
-
-    public static ArrayList<Question> getQuestions(){
-        ArrayList<Question> questions = new ArrayList<>();
-
-        Question question1 = new Question("Q. 5 * 10 = ?", "math", "50", "30", "75","20", "1", 3);
-        questions.add(question1);
-
-        Question question2 = new Question("Q. 6 * 10 = ?", "math","50", "30", "60","20", "3", 3);
-        questions.add(question2);
-
-        return questions;
-
+    public boolean getStatus(){
+        return status;
     }
 }
