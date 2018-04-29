@@ -1,6 +1,7 @@
 package com.neher.ecl.learningapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -21,13 +22,13 @@ import java.util.Map;
  * Created by Administrator on 4/12/2018.
  */
 
-public class MyJsonObjectRequest {
+public class ObjectRequestForWormUpQuestions {
 
     private Context context;
     private JSONObject jsonResponse;
-    private static final String TAG = "MyJsonObjectRequest";
+    private static final String TAG = "ObjectRequestForWorm";
 
-    public MyJsonObjectRequest(Context context)
+    public ObjectRequestForWormUpQuestions(Context context)
     {
         this.context = context;
     }
@@ -36,10 +37,11 @@ public class MyJsonObjectRequest {
     {
         Log.d(TAG, url);
         Log.d(TAG, "method calling");
-        JsonObjectRequest jsonObjectRequests =  new JsonObjectRequest(Request.Method.POST, url, null,
+        JsonObjectRequest jsonObjectRequestsForWormUpQuestions =  new JsonObjectRequest(Request.Method.POST, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.d(TAG, String.valueOf(response));
                         try {
                             QuestionDB questionDB = new QuestionDB(context);
                             questionDB.getWritableDatabase();
@@ -58,50 +60,35 @@ public class MyJsonObjectRequest {
                                 String ans = jsonObject.getString("ans");
                                 int weight = jsonObject.getInt("weight");
 
-                                Question question = new Question(qus, sub, option_1, option_2, option_3,option_4, ans,weight, false);
+                                Question question = new Question(qus, sub, option_1, option_2, option_3,option_4, ans, weight, Env.WORMUP_UNREAD_QUESTION);
                                 questionDB.store(question);
                                 Log.d(TAG, question.getQuestion());
 
                             }
+
                             SharedPreferences sharedPref = context.getSharedPreferences(Env.USER_INFO_SHARD_PRE, Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putString("worm_up_qsn_download", "yes");
                             editor.commit();
 
+
+                            context.startActivity(new Intent(context, WormUpQuestionActivity.class));
+
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Log.d(TAG, "error!");
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        /*JSONObject obj = new JSONObject();
-
-                        Log.d(TAG, "error");
-
-                        try {
-                            obj.put("status", false);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        jsonResponse = obj;*/
+                        Log.d(TAG, String.valueOf(error));
+                        Log.d(TAG, "There is an error for downloading worm up questions");
                     }
-                })
-                {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
+                });
 
-                        SharedPreferences preferences = context.getSharedPreferences(Env.USER_INFO_SHARD_PRE, Context.MODE_PRIVATE);
-                        Map<String, String> map = new HashMap<>();
-                        map.put("Content-Type","application/json");
-                        map.put("Accept","application/json");
-                        map.put("Authorization", preferences.getString("access_token",""));
-                        return map;
-                    }
-                };
-
-        Singleton.getInstance(context).addToRequestque(jsonObjectRequests);
+        Singleton.getInstance(context).addToRequestque(jsonObjectRequestsForWormUpQuestions);
     }
 
 }

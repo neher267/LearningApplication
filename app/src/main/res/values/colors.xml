@@ -7,4 +7,6 @@
     <color name="btn_color">#A20B89</color>
     <color name="txtColor">#FFF</color>
     <color name="optionColor">#A98F17</color>
+    <color name="inputColor">#457E37</color>
+    <color name="scoreColor">#49377E</color>
 </resources>

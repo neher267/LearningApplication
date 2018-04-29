@@ -4,6 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -47,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity{
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    private static final String TAG = "Registration Activity";
+    private static final String TAG = "RegistrationActivity";
 
 
     private UserLoginTask mAuthTask = null;
@@ -152,9 +155,12 @@ public class RegisterActivity extends AppCompatActivity{
      * errors are presented and no actual login attempt is made.
      */
     private void attemptRegistration() {
+        Log.d(TAG, "attemptRegistration method is calling");
         if (mAuthTask != null) {
             return;
         }
+        Log.d(TAG, "attemptRegistration method is calling2");
+
 
         // Reset errors.
         mMobileView.setError(null);
@@ -208,7 +214,10 @@ public class RegisterActivity extends AppCompatActivity{
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+
+
             mAuthTask = new UserLoginTask(name, mobile, gender, date_of_birth, password);
+
             mAuthTask.execute((Void) null);
         }
     }
@@ -290,6 +299,18 @@ public class RegisterActivity extends AppCompatActivity{
                         @Override
                         public void onResponse(String response) {
                             Log.d(TAG, response);
+
+                            SharedPreferences sharedPref = RegisterActivity.this.getSharedPreferences(Env.USER_INFO_SHARD_PRE, Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+
+                            editor.putString("name", name);
+                            editor.putString("mobile", mobile);
+                            editor.putString("gender", gender);
+                            editor.putString("dob", dob);
+                            editor.putString("password", password);
+                            editor.commit();
+
+                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                         }
                     },
                     new Response.ErrorListener() {
@@ -325,7 +346,7 @@ public class RegisterActivity extends AppCompatActivity{
             showProgress(false);
 
             if (success) {
-                finish();
+                //finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

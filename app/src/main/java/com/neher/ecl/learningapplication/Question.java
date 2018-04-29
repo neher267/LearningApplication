@@ -15,9 +15,9 @@ public class Question {
     private String option_4;
     private String ans;
     private int weight;
-    private boolean status;
+    private int status;
 
-    public Question(String question, String subject, String option_1, String option_2, String option_3, String option_4, String ans, int weight, boolean status){
+    public Question(String question, String subject, String option_1, String option_2, String option_3, String option_4, String ans, int weight, int status){
         this.question = question;
         this.subject = subject;
         this.option_1 = option_1;
@@ -32,28 +32,36 @@ public class Question {
     public String getQuestion(){
         return question;
     }
+
     public String getSubject(){
         return subject;
     }
+
     public String getOption_1(){
         return option_1;
     }
+
     public String getOption_2(){
         return option_2;
     }
+
     public String getOption_3(){
         return option_3;
     }
+
     public String getOption_4(){
         return option_4;
     }
+
     public String getAns(){
         return ans;
     }
+
     public int getWeight(){
         return weight;
     }
-    public boolean getStatus(){
+
+    public int getStatus(){
         return status;
     }
 }

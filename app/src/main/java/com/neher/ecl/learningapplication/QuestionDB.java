@@ -15,7 +15,7 @@ public class QuestionDB extends SQLiteOpenHelper {
 
     private static final String TAG = "QuestionDB";
 
-    static final int VERSION = 2;
+    static final int VERSION = 7;
     static final String DB_NAME = "learning";
     static final String TABLE_NAME = "questions";
     static final String COL_ID = "_id";
@@ -40,9 +40,8 @@ public class QuestionDB extends SQLiteOpenHelper {
             +COL_OPTION_D+" VARCHAR, "
             +COL_ANS+" VARCHAR, "
             +COL_WEIGHT+" INTEGER, "
-            +COL_STATUS+" BOOLEAN);";
+            +COL_STATUS+" INTEGER);"; // 0=unread, 1 = read, 2 = error answer, 3 = right answer, 4= worm up qsn unread, 5 = worm up question read
 
-    private final String ALL_QSNS = "SELECT * FROM "+TABLE_NAME+" WHERE "+COL_WEIGHT+" > 0";
 
 
     public QuestionDB(Context context) {
@@ -60,25 +59,59 @@ public class QuestionDB extends SQLiteOpenHelper {
         Log.d(TAG, "Database Update Successfully!");
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
 
-        // call onCreate method
+        this.onCreate(sqLiteDatabase);
 
     }
-
 
 
     public Cursor index()
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor result = db.rawQuery(ALL_QSNS,null);
+        Cursor result = db.rawQuery("SELECT * FROM "+TABLE_NAME,null);
         return result;
     }
+
+    public Cursor getWormUpQuestion()
+    {
+        Log.d(TAG, "getWormUpQuestion is calling");
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.WORMUP_UNREAD_QUESTION+" LIMIT 1", null);
+        return cursor;
+    }
+
 
     public Cursor getQuestion()
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        //Cursor cursors = db.rawQuery("SELECT * FROM TABLE_NAME WHERE COL_STATUS = false Limit 1", null);
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME+ " WHERE " +COL_STATUS+ " = 1 Limit 1", null);
+        Cursor cursor;
+
+        cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.UNREAD_QUESTION+" Limit 1", null);
+        if (!cursor.moveToFirst())
+        {
+            Log.d(TAG, "Read Question");
+            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.READ_QUESTION+" Limit 1", null);
+        }
+
+        if (!cursor.moveToFirst())
+        {
+            Log.d(TAG, "Error Question");
+            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.ERROR_ANS+" Limit 1", null);
+        }
+
+
         return cursor;
+    }
+
+    public void update(int id, int status_code)
+    {
+        Log.d(TAG, "id: "+String.valueOf(id));
+        String row_id =String.valueOf(id);
+
+        ContentValues cv = new ContentValues();
+        cv.put(COL_STATUS, status_code);
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        long updated_row_id = sqLiteDatabase.update(TABLE_NAME, cv, COL_ID+" = ?", new String[]{row_id});
+        Log.d(TAG, "Update row: "+updated_row_id+" Row id: "+row_id);
     }
 
     public long store(Question question){
@@ -98,18 +131,8 @@ public class QuestionDB extends SQLiteOpenHelper {
         long id = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
 
         Log.d(TAG, id+": "+question.getQuestion());
+        Log.d(TAG, id+": "+question.getStatus());
 
         return id;
-    }
-
-    public void update(int id)
-    {
-        String row =String.valueOf(id);
-        ContentValues cv = new ContentValues();
-        cv.put(COL_STATUS, false);
-        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
-        long row_id = sqLiteDatabase.update(TABLE_NAME, cv, COL_ID+" = ?", new String[]{row});
-
-        Log.d(TAG, "Update row: "+row_id);
     }
 }

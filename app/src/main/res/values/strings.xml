@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LearningApplication</string>
+    <string name="app_name">Learner</string>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
@@ -23,5 +23,11 @@
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="title_activity_game">GameActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

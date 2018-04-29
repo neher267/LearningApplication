@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -31,14 +32,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
@@ -351,10 +350,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 editor.putString("access_token", "Bearer "+object.getString("access_token"));
                                 editor.commit();
 
+                                startActivity(new Intent(LoginActivity.this, QuestionActivity.class));
+
+                                int last_id = sharedPref.getInt(Env.LAST_DOWNLOAD_QSN_ID, 0);
+                                Log.d(TAG, "Download new questions");
+                                new ObjectRequestForQuestions(LoginActivity.this).getResponse(Env.QUESTIONS_URL, last_id);
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
                         }
                     },
                     new Response.ErrorListener() {
@@ -378,6 +382,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             return params;
                         }
                     };
+
             Singleton.getInstance(LoginActivity.this).addToRequestque(loginRequest);
 
             return true;
@@ -389,7 +394,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                finish();
+                //finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -401,6 +406,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+
     }
 }
 

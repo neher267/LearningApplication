@@ -1,5 +1,6 @@
 package com.neher.ecl.learningapplication;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,11 +10,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class QuestionActivity extends AppCompatActivity implements View.OnClickListener{
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+public class WormUpQuestionActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private static final String TAG = "WormUpQuestionActivity";
 
     private TextView continue_btn;
     private TextView scoreView;
@@ -26,24 +43,22 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     private QuestionDB questionDB;
     private Cursor cursor;
 
-    private int score;
+    private int worm_up_marks;
+    private int worm_up_marks_weight;
+
+    private int worm_up_wrong_ans;
+    private int worm_up_wrong_ans_weight;
 
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
 
-    private static final String TAG = "QuestionActivity";
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
-
-        sharedPref= this.getSharedPreferences(Env.USER_INFO_SHARD_PRE, MODE_PRIVATE);
-
-        editor = sharedPref.edit();
-
-        score = sharedPref.getInt("main_score", 0);
 
         question = findViewById(R.id.question_id);
         scoreView = findViewById(R.id.score_id);
@@ -59,22 +74,32 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         option_4.setOnClickListener(this);
         continue_btn.setOnClickListener(this);
 
-        questionDB = new QuestionDB(this);
-        questionDB.getWritableDatabase();
+        sharedPref= this.getSharedPreferences(Env.USER_INFO_SHARD_PRE, MODE_PRIVATE);
 
-        /*Cursor cursor = questionDB.index();
-        while (cursor.moveToNext())
+        editor = sharedPref.edit();
+
+        worm_up_marks = sharedPref.getInt("worm_up_marks", 0);
+        worm_up_marks_weight = sharedPref.getInt("worm_up_marks_weight", 0);
+
+        worm_up_wrong_ans = sharedPref.getInt("worm_up_wrong_ans", 0);
+        worm_up_wrong_ans_weight = sharedPref.getInt("worm_up_wrong_ans_weight", 0);
+
+        if(!sharedPref.getString("access_token", "no").equals("no"))
         {
-            String qsn = cursor.getString(cursor.getColumnIndex(QuestionDB.COL_QUESTION));
-            String status = cursor.getString(cursor.getColumnIndex(QuestionDB.COL_STATUS));
-            int id = cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID));
+            finish();
+            startActivity(new Intent(this, QuestionActivity.class));
+        }
+        else
+        {
+            questionDB = new QuestionDB(this);
+            questionDB.getWritableDatabase();
+            nextQuestion();
+        }
 
-            Log.d(TAG, "Id: "+String.valueOf(id)+" "+qsn+" : Status = "+status);
-        }*/
-
-        nextQuestion();
+        Log.d(TAG, "onCreate method is calling.");
 
     }
+
 
     @Override
     public void onClick(View view) {
@@ -105,9 +130,13 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+
+
     public void nextQuestion()
     {
-        cursor = questionDB.getQuestion();
+        Log.d(TAG, "nextQuestion method is calling");
+
+        cursor = questionDB.getWormUpQuestion();
 
         if (cursor.moveToFirst()) {
             String qsn = cursor.getString(cursor.getColumnIndex(QuestionDB.COL_QUESTION));
@@ -119,10 +148,14 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
 
             Log.d(TAG, qsn);
         }
+
         else {
             finish();
-            Log.d(TAG, "There is now row");
-            startActivity(new Intent(this, ThankYouActivity.class));
+            Log.d(TAG, "Worm Up Test is over.");
+            Intent intent = new Intent(WormUpQuestionActivity.this, WormUpResultActivity.class);
+            intent.putExtra("worm_up_marks", worm_up_marks);
+            startActivity(intent);
+
         }
     }
 
@@ -130,29 +163,42 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
 
     public void checkResult(String user_ans){
         Log.d(TAG, user_ans);
-
         if(cursor.moveToFirst())
         {
+            questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.WORMUP_READ_QUESTION);
+
             String ans = cursor.getString(cursor.getColumnIndex(QuestionDB.COL_ANS));
             Log.d(TAG, ans);
 
             if(ans.equals(user_ans))
             {
-                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.RIGHT_ANS);
-                score++;
-                editor.putInt("main_score", score);
+                worm_up_marks_weight += cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_WEIGHT));
+                ++worm_up_marks;
+
+                editor.putInt("worm_up_marks", worm_up_marks);
+                editor.putInt("worm_up_marks_weight", worm_up_marks_weight);
                 editor.commit();
-                scoreView.setText("Score: "+score);
+
+                scoreView.setText("Score: "+worm_up_marks);
                 showDialog("Great!", "Your answer is correct");
+
                 nextQuestion();
             }
+
             else if(user_ans.equals("continue"))
             {
-                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.READ_QUESTION);
+                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.WORMUP_READ_QUESTION);
                 nextQuestion();
             }
+
             else{
-                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.ERROR_ANS);
+                worm_up_wrong_ans_weight += cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_WEIGHT));
+                ++worm_up_wrong_ans;
+
+                editor.putInt("worm_up_wrong_ans", worm_up_wrong_ans);
+                editor.putInt("worm_up_wrong_ans_weight", worm_up_wrong_ans_weight);
+                editor.commit();
+
                 showDialog("Opps!","Your answer is wrong!");
                 nextQuestion();
             }
@@ -164,10 +210,11 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+
+
     public void showDialog(String title, String message){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         builder.setTitle(title);
         builder.setMessage(message);
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
