@@ -60,15 +60,15 @@ public class ObjectRequestForWormUpQuestions {
                                 String ans = jsonObject.getString("ans");
                                 int weight = jsonObject.getInt("weight");
 
-                                Question question = new Question(qus, sub, option_1, option_2, option_3,option_4, ans, weight, Env.WORMUP_UNREAD_QUESTION);
+                                Question question = new Question(qus, sub, option_1, option_2, option_3,option_4, ans, weight, Env.db.wormup_unread_question);
                                 questionDB.store(question);
                                 Log.d(TAG, question.getQuestion());
 
                             }
 
-                            SharedPreferences sharedPref = context.getSharedPreferences(Env.USER_INFO_SHARD_PRE, Context.MODE_PRIVATE);
+                            SharedPreferences sharedPref = context.getSharedPreferences(Env.sp.sp_name, Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putString("worm_up_qsn_download", "yes");
+                            editor.putString(Env.sp.worm_up_qsn_downloaded, "yes");
                             editor.commit();
 
 

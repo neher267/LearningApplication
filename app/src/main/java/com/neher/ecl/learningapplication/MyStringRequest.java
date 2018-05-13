@@ -15,6 +15,8 @@ public class MyStringRequest {
 
     private Context context;
     private String responseString;
+    private static final String TAG = MyStringRequest.class.getSimpleName();
+
     public MyStringRequest(Context context)
     {
         this.context = context;

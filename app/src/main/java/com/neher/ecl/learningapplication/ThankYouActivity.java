@@ -14,8 +14,8 @@ public class ThankYouActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thenk_you);
 
-        SharedPreferences sharedPref = this.getSharedPreferences(Env.USER_INFO_SHARD_PRE, MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
         score = findViewById(R.id.score);
-        score.setText("Score: "+sharedPref.getInt("main_score", 0));
+        score.setText("Score: "+sharedPref.getInt(Env.sp.game_score, 0));
     }
 }

@@ -32,6 +32,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -79,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
-    private static final String TAG = "Login Activity";
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
 
 
@@ -95,6 +96,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                Log.d(TAG, String.valueOf(id));
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                     attemptLogin();
                     return true;
@@ -337,24 +339,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
 
 
-            StringRequest loginRequest = new StringRequest(Request.Method.POST, Env.LOGIN_URL,
+            StringRequest loginRequest = new StringRequest(Request.Method.POST, Env.remote.login_url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             try {
                                 JSONObject object = new JSONObject(response);
-                                Log.d(TAG, object.getString("access_token"));
                                 Context context = getApplicationContext();
-                                SharedPreferences sharedPref = context.getSharedPreferences(Env.USER_INFO_SHARD_PRE, MODE_PRIVATE);
+                                SharedPreferences sharedPref = context.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("access_token", "Bearer "+object.getString("access_token"));
+                                editor.putString(Env.sp.access_token, "Bearer "+object.getString("access_token"));
                                 editor.commit();
+                                Log.d(TAG, "Authentication success!");
 
-                                startActivity(new Intent(LoginActivity.this, QuestionActivity.class));
-
-                                int last_id = sharedPref.getInt(Env.LAST_DOWNLOAD_QSN_ID, 0);
-                                Log.d(TAG, "Download new questions");
-                                new ObjectRequestForQuestions(LoginActivity.this).getResponse(Env.QUESTIONS_URL, last_id);
+                                getUserDetails();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -373,9 +371,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         protected Map<String, String> getParams() throws AuthFailureError {
                             Map<String,String> params = new HashMap<String, String>();
 
-                            params.put("grant_type", Env.GRANT_TYPE);
-                            params.put("client_id", Env.CLINT_ID);
-                            params.put("client_secret", Env.CLINT_SECRET);
+                            params.put("grant_type", Env.remote.grant_type);
+                            params.put("client_id", Env.remote.clint_id);
+                            params.put("client_secret", Env.remote.clint_secret);
                             params.put("username", mMobile);
                             params.put("password", mPassword);
                             params.put("scope", "*");
@@ -386,6 +384,57 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             Singleton.getInstance(LoginActivity.this).addToRequestque(loginRequest);
 
             return true;
+        }
+
+        public void getUserDetails()
+        {
+            Log.d(TAG, "getUserDetails is calling");
+            StringRequest userDetailsRequest = new StringRequest(Request.Method.POST, Env.remote.user_details,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                JSONObject object = jsonObject.getJSONObject("data");
+
+
+                                Context context = getApplicationContext();
+                                SharedPreferences sharedPref = context.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+
+                                editor.putString(Env.sp.user_name, object.getString("name"));
+                                editor.putString(Env.sp.user_dob, object.getString("dob"));
+                                editor.putString(Env.sp.user_mobile, object.getString("mobile"));
+                                editor.putInt(Env.sp.game_score, object.getInt("marks"));
+                                editor.commit();
+
+                                Log.d(TAG, "User Data was saved successfully");
+
+                                new ObjectRequestForQuestions(LoginActivity.this).getResponse();
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                            Log.d(TAG, String.valueOf(error));
+                        }
+                    })
+            {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    SharedPreferences preferences = getApplicationContext().getSharedPreferences(Env.sp.sp_name, Context.MODE_PRIVATE);
+                    Map<String, String> map = new HashMap<>();
+                    map.put("Authorization", preferences.getString(Env.sp.access_token,""));
+                    return map;
+                }
+            };
+
+            Singleton.getInstance(LoginActivity.this).addToRequestque(userDetailsRequest);
         }
 
         @Override

@@ -33,25 +33,18 @@ public class ObjectRequestForQuestions {
         this.context = context;
     }
 
-    public void getResponse(String url, final int last_id)
+    public void getResponse()
     {
-        Log.d(TAG, url);
-        Log.d(TAG, "method calling");
-
-        StringRequest jsonObjectRequestsForQuestions = new StringRequest(Request.Method.POST, url,
+        StringRequest jsonObjectRequestsForQuestions = new StringRequest(Request.Method.POST, Env.remote.questions_url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(TAG, String.valueOf(response));
                         try {
                             JSONObject jsonObject1 = new JSONObject(response);
                             JSONArray jsonArray = jsonObject1.getJSONArray("data");
-                            SharedPreferences sharedPref = context.getSharedPreferences(Env.USER_INFO_SHARD_PRE, Context.MODE_PRIVATE);
 
                             QuestionDB questionDB = new QuestionDB(context);
                             questionDB.getWritableDatabase();
-
-                            int last_id = sharedPref.getInt(Env.LAST_DOWNLOAD_QSN_ID, 0);
 
                             for (int i = 0; i<jsonArray.length(); i++)
                             {
@@ -66,23 +59,13 @@ public class ObjectRequestForQuestions {
                                 String ans = jsonObject.getString("ans");
                                 int weight = jsonObject.getInt("weight");
 
-                                last_id = jsonObject.getInt("id");
-
-                                Question question = new Question(qus, sub, option_1, option_2, option_3, option_4, ans, weight, Env.UNREAD_QUESTION);
-
+                                Question question = new Question(qus, sub, option_1, option_2, option_3, option_4, ans, weight, Env.db.unread_question);
                                 questionDB.store(question);
-                                Log.d(TAG, question.getQuestion());
-
                             }
 
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putInt("questions_version", 1);
-                            editor.putInt(Env.LAST_DOWNLOAD_QSN_ID, last_id);
-                            editor.commit();
+                            Log.d(TAG, "Questions are Downloaded and also saved in database.");
 
-                            Log.d(TAG, "Last Id: "+String.valueOf(last_id));
-
-                            context.startActivity(new Intent(context, QuestionActivity.class));
+                            context.startActivity(new Intent(context, GameActivity.class));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -96,22 +79,18 @@ public class ObjectRequestForQuestions {
                 })
                 {
                     @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Log.d(TAG, "getParams is calling");
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        SharedPreferences preferences = context.getSharedPreferences(Env.sp.sp_name, Context.MODE_PRIVATE);
                         Map<String, String> map = new HashMap<>();
-                        map.put("id", String.valueOf(last_id));
+                        map.put("Authorization", preferences.getString(Env.sp.access_token,""));
                         return map;
                     }
 
                     @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        SharedPreferences preferences = context.getSharedPreferences(Env.USER_INFO_SHARD_PRE, Context.MODE_PRIVATE);
-
-                        Log.d(TAG, "getHeaders is calling");
-                        Log.d(TAG, "access_token: "+preferences.getString("access_token",""));
-
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        SharedPreferences preferences = context.getSharedPreferences(Env.sp.sp_name, Context.MODE_PRIVATE);
                         Map<String, String> map = new HashMap<>();
-                        map.put("Authorization", preferences.getString("access_token",""));
+                        map.put("game_score", String.valueOf(preferences.getInt(Env.sp.game_score, 0)));
                         return map;
                     }
                 };

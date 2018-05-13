@@ -13,7 +13,7 @@ import android.util.Log;
 
 public class QuestionDB extends SQLiteOpenHelper {
 
-    private static final String TAG = "QuestionDB";
+    private static final String TAG = QuestionDB.class.getSimpleName();
 
     static final int VERSION = 7;
     static final String DB_NAME = "learning";
@@ -75,7 +75,7 @@ public class QuestionDB extends SQLiteOpenHelper {
     {
         Log.d(TAG, "getWormUpQuestion is calling");
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.WORMUP_UNREAD_QUESTION+" LIMIT 1", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.db.wormup_unread_question+" LIMIT 1", null);
         return cursor;
     }
 
@@ -85,17 +85,18 @@ public class QuestionDB extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor;
 
-        cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.UNREAD_QUESTION+" Limit 1", null);
+        cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.db.unread_question+" Limit 1", null);
+
         if (!cursor.moveToFirst())
         {
             Log.d(TAG, "Read Question");
-            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.READ_QUESTION+" Limit 1", null);
+            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.db.read_question+" Limit 1", null);
         }
 
         if (!cursor.moveToFirst())
         {
             Log.d(TAG, "Error Question");
-            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.ERROR_ANS+" Limit 1", null);
+            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.db.error_ans+" Limit 1", null);
         }
 
 
@@ -130,8 +131,8 @@ public class QuestionDB extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         long id = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
 
-        Log.d(TAG, id+": "+question.getQuestion());
-        Log.d(TAG, id+": "+question.getStatus());
+        //Log.d(TAG, id+": "+question.getQuestion());
+        //Log.d(TAG, id+": "+question.getStatus());
 
         return id;
     }

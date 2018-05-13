@@ -49,8 +49,9 @@ public class RegisterActivity extends AppCompatActivity{
     /**
      * Id to identity READ_CONTACTS permission request.
      */
+
     private static final int REQUEST_READ_CONTACTS = 0;
-    private static final String TAG = "RegistrationActivity";
+    private static final String TAG = RegisterActivity.class.getSimpleName();
 
 
     private UserLoginTask mAuthTask = null;
@@ -294,20 +295,21 @@ public class RegisterActivity extends AppCompatActivity{
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            StringRequest RegisterRequest = new StringRequest(Request.Method.POST, Env.REGISTER_URL,
+            StringRequest RegisterRequest = new StringRequest(Request.Method.POST, Env.remote.register_url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             Log.d(TAG, response);
 
-                            SharedPreferences sharedPref = RegisterActivity.this.getSharedPreferences(Env.USER_INFO_SHARD_PRE, Context.MODE_PRIVATE);
+                            SharedPreferences sharedPref = RegisterActivity.this.getSharedPreferences(Env.sp.sp_name, Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPref.edit();
 
-                            editor.putString("name", name);
-                            editor.putString("mobile", mobile);
-                            editor.putString("gender", gender);
-                            editor.putString("dob", dob);
-                            editor.putString("password", password);
+                            editor.putString(Env.sp.user_name, name);
+                            editor.putString(Env.sp.user_mobile, mobile);
+                            editor.putString(Env.sp.user_gender, gender);
+                            editor.putString(Env.sp.user_dob, dob);
+                            editor.putString(Env.sp.user_password, password);
+
                             editor.commit();
 
                             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));

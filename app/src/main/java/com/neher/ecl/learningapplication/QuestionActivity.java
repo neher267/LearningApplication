@@ -31,7 +31,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
 
-    private static final String TAG = "QuestionActivity";
+    private static final String TAG = QuestionActivity.class.getSimpleName();
 
 
     @Override
@@ -39,7 +39,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
 
-        sharedPref= this.getSharedPreferences(Env.USER_INFO_SHARD_PRE, MODE_PRIVATE);
+        sharedPref= this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
 
         editor = sharedPref.edit();
 
@@ -138,7 +138,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
 
             if(ans.equals(user_ans))
             {
-                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.RIGHT_ANS);
+                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.db.right_ans);
                 score++;
                 editor.putInt("main_score", score);
                 editor.commit();
@@ -148,11 +148,11 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             }
             else if(user_ans.equals("continue"))
             {
-                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.READ_QUESTION);
+                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.db.read_question);
                 nextQuestion();
             }
             else{
-                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.ERROR_ANS);
+                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.db.error_ans);
                 showDialog("Opps!","Your answer is wrong!");
                 nextQuestion();
             }

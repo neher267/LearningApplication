@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 public class WormUpQuestionActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private static final String TAG = "WormUpQuestionActivity";
+    private static final String TAG = WormUpQuestionActivity.class.getSimpleName();
 
     private TextView continue_btn;
     private TextView scoreView;
@@ -74,7 +74,7 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
         option_4.setOnClickListener(this);
         continue_btn.setOnClickListener(this);
 
-        sharedPref= this.getSharedPreferences(Env.USER_INFO_SHARD_PRE, MODE_PRIVATE);
+        sharedPref= this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
 
         editor = sharedPref.edit();
 
@@ -165,7 +165,7 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
         Log.d(TAG, user_ans);
         if(cursor.moveToFirst())
         {
-            questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.WORMUP_READ_QUESTION);
+            questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.db.wormup_read_question);
 
             String ans = cursor.getString(cursor.getColumnIndex(QuestionDB.COL_ANS));
             Log.d(TAG, ans);
@@ -187,7 +187,7 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
 
             else if(user_ans.equals("continue"))
             {
-                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.WORMUP_READ_QUESTION);
+                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.db.wormup_read_question);
                 nextQuestion();
             }
 

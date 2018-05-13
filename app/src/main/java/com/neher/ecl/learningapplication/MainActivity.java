@@ -2,6 +2,8 @@ package com.neher.ecl.learningapplication;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +16,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView wormUpButton;
     private TextView logInBtn;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
     private SharedPreferences sharedPref;
     private Connectivity connectivity;
 
@@ -22,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        sharedPref= this.getSharedPreferences(Env.USER_INFO_SHARD_PRE, MODE_PRIVATE);
+        sharedPref= this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
         wormUpButton = findViewById(R.id.worm_up_btn);
         logInBtn = findViewById(R.id.log_in_id);
         wormUpButton.setOnClickListener(this);
@@ -30,22 +32,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         connectivity = new Connectivity(MainActivity.this);
 
-        Log.d(TAG, "access_token: "+sharedPref.getString("access_token", "no"));
-        Log.d(TAG, "main_score: "+sharedPref.getInt("main_score", 0));
+        String accessToken = sharedPref.getString(Env.sp.access_token, "no");
 
-        if(!sharedPref.getString("access_token", "no").equals("no"))
+        Log.d(TAG, "Access Token: "+accessToken);
+        Log.d(TAG, "Game Score: "+sharedPref.getInt(Env.sp.game_score, 0));
+
+        if(!accessToken.equals("no"))
         {
             finish();
             if(connectivity.getConnectionStatus())
             {
                 Log.d(TAG, "Connection Status: Yes");
-                Log.d(TAG, "Download new questions");
-                int last_id = sharedPref.getInt(Env.LAST_DOWNLOAD_QSN_ID, 0);
-                new ObjectRequestForQuestions(MainActivity.this).getResponse(Env.QUESTIONS_URL, last_id);
+                Log.d(TAG, "Downloading new questions");
+                new UpdateUserInfo(MainActivity.this).getResponse();
+                new ObjectRequestForQuestions(MainActivity.this).getResponse();
             }
             else
             {
-                startActivity(new Intent(this, QuestionActivity.class));
+                startActivity(new Intent(this, GameActivity.class));
             }
         }
     }
@@ -53,21 +57,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+
         if (view.getId() == R.id.worm_up_btn)
         {
-            Log.d(TAG, "worm_up_qsn_download: "+sharedPref.getString("worm_up_qsn_download", "no"));
+            String wormUpQsnDownloaded = sharedPref.getString(Env.sp.worm_up_qsn_downloaded, "no");
 
-            if(sharedPref.getString("worm_up_qsn_download", "no").equals("no"))
+            Log.d(TAG, "Worm Up Questions Downloaded: "+wormUpQsnDownloaded);
+
+            if(wormUpQsnDownloaded.equals("no"))
             {
                 if(connectivity.getConnectionStatus())
                 {
                     Log.d(TAG, "Connection Status: Yes");
-                    new ObjectRequestForWormUpQuestions(this).getResponse(Env.WARM_UP_URL);
-                    Log.d(TAG, "Worm Up Questions download and saved in database");
+                    Log.d(TAG, "Worm Up Questions downloading...");
+                    new ObjectRequestForWormUpQuestions(this).getResponse(Env.remote.warm_up_url);
                 }
                 else
                 {
-                    Toast.makeText(this, "Please Check Your Internet Connection!", Toast.LENGTH_LONG).show();
+                    showSnackbarForInternetConnection(view);
                 }
             }
             else{
@@ -86,11 +93,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             else
             {
-                Toast.makeText(this, "Please Check Your Internet Connection!", Toast.LENGTH_LONG).show();
+                showSnackbarForInternetConnection(view);
             }
-
         }
     }
 
+    public void showSnackbarForInternetConnection(View view)
+    {
+        Snackbar snackbar = Snackbar.make(view, "No Internet Connection!", Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("Settings", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), 0);
+            }
+        });
 
+        snackbar.show();
+    }
 }
