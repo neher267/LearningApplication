@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class Question {
     private String question;
-    private String subject;
+    private int subject;
     private String option_1;
     private String option_2;
     private String option_3;
@@ -17,7 +17,7 @@ public class Question {
     private int weight;
     private int status;
 
-    public Question(String question, String subject, String option_1, String option_2, String option_3, String option_4, String ans, int weight, int status){
+    public Question(String question, int subject, String option_1, String option_2, String option_3, String option_4, String ans, int weight, int status){
         this.question = question;
         this.subject = subject;
         this.option_1 = option_1;
@@ -33,7 +33,7 @@ public class Question {
         return question;
     }
 
-    public String getSubject(){
+    public int getSubject(){
         return subject;
     }
 

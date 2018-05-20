@@ -1,17 +1,18 @@
 <resources>
     <string name="app_name">Learner</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">Log In</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_name">Enter your name</string>
-    <string name="prompt_mobile">Mobile No</string>
-    <string name="prompt_gender_male">Male</string>
-    <string name="prompt_gender_female">Female</string>
+    <string name="prompt_name">Name</string>
+    <string name="prompt_mobile">Mobile</string>
+    <string name="prompt_gender_male">Boy</string>
+    <string name="prompt_gender_female">Girl</string>
     <string name="prompt_dob">Date of Birth</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_con_password">Confirm Password</string>
-    <string name="action_sign_up">Register</string>
-    <string name="action_sign_in_short">Sign In</string>
+    <string name="action_sign_up">Create Account</string>
+
+    <string name="action_sign_in_short">Log In</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -19,11 +20,11 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_register">Sign in</string>
+    <string name="title_activity_register">Registration</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="action_sign_in">Sign in</string>
+    <string name="prompt_email">Mobile No</string>
+    <string name="action_sign_in">Log in</string>
     <string name="title_activity_game">Play Game</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

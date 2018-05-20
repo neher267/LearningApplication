@@ -3,6 +3,7 @@ package com.neher.ecl.learningapplication;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -40,6 +41,7 @@ public class ObjectRequestForQuestions {
                     @Override
                     public void onResponse(String response) {
                         try {
+
                             JSONObject jsonObject1 = new JSONObject(response);
                             JSONArray jsonArray = jsonObject1.getJSONArray("data");
 
@@ -51,7 +53,7 @@ public class ObjectRequestForQuestions {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                                 String qus = jsonObject.getString("question");
-                                String sub = jsonObject.getString("subject");
+                                int sub = jsonObject.getInt("subject");
                                 String option_1 = jsonObject.getString("a");
                                 String option_2 = jsonObject.getString("b");
                                 String option_3 = jsonObject.getString("c");
@@ -65,7 +67,8 @@ public class ObjectRequestForQuestions {
 
                             Log.d(TAG, "Questions are Downloaded and also saved in database.");
 
-                            context.startActivity(new Intent(context, GameActivity.class));
+                            context.startActivity(new Intent(context, SubjectSelectActivity.class));
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -75,21 +78,21 @@ public class ObjectRequestForQuestions {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, "Question download unsuccessfully!");
+                        Log.d(TAG, String.valueOf(error));
                     }
                 })
                 {
                     @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        SharedPreferences preferences = context.getSharedPreferences(Env.sp.sp_name, Context.MODE_PRIVATE);
-                        Map<String, String> map = new HashMap<>();
-                        map.put("Authorization", preferences.getString(Env.sp.access_token,""));
-                        return map;
-                    }
-
-                    @Override
                     protected Map<String, String> getParams() throws AuthFailureError {
                         SharedPreferences preferences = context.getSharedPreferences(Env.sp.sp_name, Context.MODE_PRIVATE);
                         Map<String, String> map = new HashMap<>();
+
+                        Log.d(TAG, preferences.getString(Env.sp.user_mobile, "Mobile"));
+                        Log.d(TAG, preferences.getString(Env.sp.user_password, "Password"));
+
+                        map.put("username", preferences.getString(Env.sp.user_mobile, ""));
+                        map.put("password", preferences.getString(Env.sp.user_password, "123456"));
+
                         map.put("game_score", String.valueOf(preferences.getInt(Env.sp.game_score, 0)));
                         return map;
                     }
@@ -97,5 +100,6 @@ public class ObjectRequestForQuestions {
 
         Singleton.getInstance(context).addToRequestque(jsonObjectRequestsForQuestions);
     }
+
 
 }

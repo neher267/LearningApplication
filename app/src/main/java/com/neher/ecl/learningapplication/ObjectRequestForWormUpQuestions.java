@@ -41,7 +41,7 @@ public class ObjectRequestForWormUpQuestions {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d(TAG, String.valueOf(response));
+
                         try {
                             QuestionDB questionDB = new QuestionDB(context);
                             questionDB.getWritableDatabase();
@@ -52,7 +52,7 @@ public class ObjectRequestForWormUpQuestions {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                                 String qus = jsonObject.getString("question");
-                                String sub = jsonObject.getString("subject");
+                                int sub = jsonObject.getInt("subject");
                                 String option_1 = jsonObject.getString("a");
                                 String option_2 = jsonObject.getString("b");
                                 String option_3 = jsonObject.getString("c");

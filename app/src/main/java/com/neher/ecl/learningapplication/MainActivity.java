@@ -8,8 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -20,10 +20,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SharedPreferences sharedPref;
     private Connectivity connectivity;
 
+    private ImageView logoView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        logoView = findViewById(R.id.id_logo_222);
+
         sharedPref= this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
         wormUpButton = findViewById(R.id.worm_up_btn);
         logInBtn = findViewById(R.id.log_in_id);
@@ -37,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "Access Token: "+accessToken);
         Log.d(TAG, "Game Score: "+sharedPref.getInt(Env.sp.game_score, 0));
 
+        Log.d(TAG, "User Name: "+sharedPref.getString(Env.sp.user_mobile, "0"));
+        Log.d(TAG, "User Password: "+sharedPref.getString(Env.sp.user_password, "0"));
+
         if(!accessToken.equals("no"))
         {
             finish();
@@ -44,12 +52,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             {
                 Log.d(TAG, "Connection Status: Yes");
                 Log.d(TAG, "Downloading new questions");
-                new UpdateUserInfo(MainActivity.this).getResponse();
                 new ObjectRequestForQuestions(MainActivity.this).getResponse();
             }
             else
             {
-                startActivity(new Intent(this, GameActivity.class));
+                startActivity(new Intent(this, SubjectSelectActivity.class));
             }
         }
     }
@@ -80,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else{
                 Log.d(TAG, "Worm up Activity is calling");
                 startActivity(new Intent(MainActivity.this, WormUpQuestionActivity.class));
+                finish();
             }
         }
         else if(view.getId() == R.id.log_in_id)
@@ -88,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(connectivity.getConnectionStatus())
             {
                 Log.d(TAG, "Connection Status: Yes");
-                finish();
                 startActivity(new Intent(this, LoginActivity.class));
             }
             else

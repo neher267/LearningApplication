@@ -15,7 +15,7 @@ public class QuestionDB extends SQLiteOpenHelper {
 
     private static final String TAG = QuestionDB.class.getSimpleName();
 
-    static final int VERSION = 7;
+    static final int VERSION = 8;
     static final String DB_NAME = "learning";
     static final String TABLE_NAME = "questions";
     static final String COL_ID = "_id";
@@ -80,23 +80,23 @@ public class QuestionDB extends SQLiteOpenHelper {
     }
 
 
-    public Cursor getQuestion()
+    public Cursor getQuestion(int subject)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor;
 
-        cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.db.unread_question+" Limit 1", null);
+        cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_SUB+" = "+subject+" AND "+COL_STATUS+" = "+Env.db.unread_question+" Limit 1", null);
 
         if (!cursor.moveToFirst())
         {
             Log.d(TAG, "Read Question");
-            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.db.read_question+" Limit 1", null);
+            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_SUB+" = "+subject+" AND "+COL_STATUS+" = "+Env.db.read_question+" Limit 1", null);
         }
 
         if (!cursor.moveToFirst())
         {
             Log.d(TAG, "Error Question");
-            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_STATUS+" = "+Env.db.error_ans+" Limit 1", null);
+            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_SUB+" = "+subject+" AND "+COL_STATUS+" = "+Env.db.error_ans+" Limit 1", null);
         }
 
 

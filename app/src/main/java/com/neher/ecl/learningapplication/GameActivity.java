@@ -39,6 +39,10 @@ public class GameActivity extends AppCompatActivity
     private int game_score;
     private int game_error;
 
+    private int subject;
+
+    private Connectivity connectivity;
+
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
 
@@ -49,7 +53,11 @@ public class GameActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        connectivity = new Connectivity(this);
         sharedPref = this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
+
+
+        subject = sharedPref.getInt(Env.sp.subject, 1);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -68,8 +76,8 @@ public class GameActivity extends AppCompatActivity
         TextView userNameView = headerView.findViewById(R.id.user_name_view);
         TextView userMobileView = headerView.findViewById(R.id.user_mobile_view);
 
-        userNameView.setText(sharedPref.getString(Env.sp.user_name, "a"));
-        userMobileView.setText(sharedPref.getString(Env.sp.user_mobile, "b"));
+        userNameView.setText(sharedPref.getString(Env.sp.user_name, ""));
+        userMobileView.setText(sharedPref.getString(Env.sp.user_mobile, ""));
 
 
 
@@ -85,6 +93,8 @@ public class GameActivity extends AppCompatActivity
         option_3 = findViewById(R.id.option_3);
         option_4 = findViewById(R.id.option_4);
         continue_btn = findViewById(R.id.continue_id);
+
+        scoreView.setText("Score: "+String.valueOf(game_score));
 
         option_1.setOnClickListener(this);
         option_2.setOnClickListener(this);
@@ -136,18 +146,31 @@ public class GameActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_profile) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_ranking) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_prize_list) {
 
-        } else if (id == R.id.nav_manage) {
+            startActivity(new Intent(this, GiftsActivity.class));
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_wining_prize_list) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_switch) {
+            startActivity(new Intent(this, SubjectSelectActivity.class));
 
+        } else if (id == R.id.nav_term_con) {
+
+        } else if (id == R.id.nav_sign_out) {
+            if(connectivity.getConnectionStatus())
+            {
+                new ObjectRequestForQuestions(this).getResponse();
+            }
+
+            editor.putString(Env.sp.access_token, "no");
+            editor.commit();
+            finish();
+            startActivity(new Intent(this, MainActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -187,7 +210,7 @@ public class GameActivity extends AppCompatActivity
 
     public void nextQuestion()
     {
-        cursor = questionDB.getQuestion();
+        cursor = questionDB.getQuestion(subject);
 
         if (cursor.moveToFirst()) {
             String qsn = cursor.getString(cursor.getColumnIndex(QuestionDB.COL_QUESTION));

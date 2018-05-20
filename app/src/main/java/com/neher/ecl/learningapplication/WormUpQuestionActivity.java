@@ -87,7 +87,7 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
         if(!sharedPref.getString("access_token", "no").equals("no"))
         {
             finish();
-            startActivity(new Intent(this, QuestionActivity.class));
+            startActivity(new Intent(this, GameActivity.class));
         }
         else
         {

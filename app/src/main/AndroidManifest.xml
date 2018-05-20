@@ -2,9 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.neher.ecl.learningapplication">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -32,13 +31,14 @@
             android:name=".RegisterActivity"
             android:label="@string/title_activity_register" />
         <activity android:name=".WormUpQuestionActivity" />
-        <activity android:name=".QuestionActivity" />
         <activity android:name=".ThankYouActivity" />
         <activity android:name=".WormUpResultActivity" />
         <activity
             android:name=".GameActivity"
             android:label="@string/title_activity_game"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".SubjectSelectActivity" />
+        <activity android:name=".GiftsActivity"></activity>
     </application>
 
 </manifest>
