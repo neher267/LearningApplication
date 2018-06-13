@@ -4,12 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.mancj.slideup.SlideUp;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -20,14 +24,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SharedPreferences sharedPref;
     private Connectivity connectivity;
 
-    private ImageView logoView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        logoView = findViewById(R.id.id_logo_222);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "neher")
+                .setSmallIcon(R.drawable.ic_menu_camera)
+                .setContentTitle("Test Title")
+                .setContentText("Hello World!")
+                .setPriority(NotificationCompat.PRIORITY_MAX);
+
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
+
+        managerCompat.notify(1124578, builder.build());
+
 
         sharedPref= this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
         wormUpButton = findViewById(R.id.worm_up_btn);
@@ -40,14 +51,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String accessToken = sharedPref.getString(Env.sp.access_token, "no");
 
         Log.d(TAG, "Access Token: "+accessToken);
-        Log.d(TAG, "Game Score: "+sharedPref.getInt(Env.sp.game_score, 0));
 
         Log.d(TAG, "User Name: "+sharedPref.getString(Env.sp.user_mobile, "0"));
         Log.d(TAG, "User Password: "+sharedPref.getString(Env.sp.user_password, "0"));
 
+        MyNotifications notifications = new MyNotifications(this);
+
+        notifications.sentNotification();
+
         if(!accessToken.equals("no"))
         {
-            finish();
             if(connectivity.getConnectionStatus())
             {
                 Log.d(TAG, "Connection Status: Yes");
@@ -58,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             {
                 startActivity(new Intent(this, SubjectSelectActivity.class));
             }
+
+            finish();
+
         }
     }
 

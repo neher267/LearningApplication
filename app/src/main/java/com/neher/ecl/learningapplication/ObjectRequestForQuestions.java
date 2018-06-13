@@ -93,7 +93,10 @@ public class ObjectRequestForQuestions {
                         map.put("username", preferences.getString(Env.sp.user_mobile, ""));
                         map.put("password", preferences.getString(Env.sp.user_password, "123456"));
 
-                        map.put("game_score", String.valueOf(preferences.getInt(Env.sp.game_score, 0)));
+                        map.put("math_score", String.valueOf(preferences.getInt(Env.sp.game_score_math, 0)));
+                        map.put("en_error", String.valueOf(preferences.getInt(Env.sp.game_error_en, 0)));
+                        map.put("en_score", String.valueOf(preferences.getInt(Env.sp.game_score_en, 0)));
+                        map.put("math_error", String.valueOf(preferences.getInt(Env.sp.game_error_math, 0)));
                         return map;
                     }
                 };

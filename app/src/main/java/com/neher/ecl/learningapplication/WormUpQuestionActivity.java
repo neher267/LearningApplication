@@ -32,27 +32,16 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
 
     private static final String TAG = WormUpQuestionActivity.class.getSimpleName();
 
-    private TextView continue_btn;
-    private TextView scoreView;
-    private RadioButton option_1;
-    private RadioButton option_2;
-    private RadioButton option_3;
-    private RadioButton option_4;
+    private TextView scoreView, continue_btn, question;
+    private RadioButton option_1, option_2, option_3, option_4;
 
-    private TextView question;
     private QuestionDB questionDB;
     private Cursor cursor;
 
-    private int worm_up_marks;
-    private int worm_up_marks_weight;
-
-    private int worm_up_wrong_ans;
-    private int worm_up_wrong_ans_weight;
+    private int wormUpScore, wormUpScoreWeight, wormUpError, wormUpErrorWeight;
 
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
-
-
 
 
     @Override
@@ -60,13 +49,7 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
 
-        question = findViewById(R.id.question_id);
-        scoreView = findViewById(R.id.score_id);
-        option_1 = findViewById(R.id.option_1);
-        option_2 = findViewById(R.id.option_2);
-        option_3 = findViewById(R.id.option_3);
-        option_4 = findViewById(R.id.option_4);
-        continue_btn = findViewById(R.id.continue_id);
+        init();
 
         option_1.setOnClickListener(this);
         option_2.setOnClickListener(this);
@@ -74,20 +57,10 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
         option_4.setOnClickListener(this);
         continue_btn.setOnClickListener(this);
 
-        sharedPref= this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
-
-        editor = sharedPref.edit();
-
-        worm_up_marks = sharedPref.getInt("worm_up_marks", 0);
-        worm_up_marks_weight = sharedPref.getInt("worm_up_marks_weight", 0);
-
-        worm_up_wrong_ans = sharedPref.getInt("worm_up_wrong_ans", 0);
-        worm_up_wrong_ans_weight = sharedPref.getInt("worm_up_wrong_ans_weight", 0);
-
-        if(!sharedPref.getString("access_token", "no").equals("no"))
+        if(!sharedPref.getString(Env.sp.access_token, "no").equals("no"))
         {
-            finish();
             startActivity(new Intent(this, GameActivity.class));
+            finish();
         }
         else
         {
@@ -96,8 +69,24 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
             nextQuestion();
         }
 
-        Log.d(TAG, "onCreate method is calling.");
+    }
 
+    private void init()
+    {
+        question = findViewById(R.id.question_id);
+        scoreView = findViewById(R.id.score_id);
+        option_1 = findViewById(R.id.option_1);
+        option_2 = findViewById(R.id.option_2);
+        option_3 = findViewById(R.id.option_3);
+        option_4 = findViewById(R.id.option_4);
+        continue_btn = findViewById(R.id.continue_id);
+        sharedPref= this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
+        editor = sharedPref.edit();
+
+        wormUpScore = sharedPref.getInt(Env.sp.worm_up_score, 0);
+        wormUpScoreWeight = sharedPref.getInt(Env.sp.worm_up_score_weight, 0);
+        wormUpError = sharedPref.getInt(Env.sp.worm_up_error, 0);
+        wormUpErrorWeight = sharedPref.getInt(Env.sp.worm_up_error_weight, 0);
     }
 
 
@@ -150,12 +139,11 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
         }
 
         else {
-            finish();
             Log.d(TAG, "Worm Up Test is over.");
             Intent intent = new Intent(WormUpQuestionActivity.this, WormUpResultActivity.class);
-            intent.putExtra("worm_up_marks", worm_up_marks);
+            intent.putExtra("worm_up_marks", wormUpScore);
             startActivity(intent);
-
+            finish();
         }
     }
 
@@ -172,16 +160,9 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
 
             if(ans.equals(user_ans))
             {
-                worm_up_marks_weight += cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_WEIGHT));
-                ++worm_up_marks;
-
-                editor.putInt("worm_up_marks", worm_up_marks);
-                editor.putInt("worm_up_marks_weight", worm_up_marks_weight);
-                editor.commit();
-
-                scoreView.setText("Score: "+worm_up_marks);
+                addScore();
+                scoreView.setText("Score: "+wormUpScore);
                 showDialog("Great!", "Your answer is correct");
-
                 nextQuestion();
             }
 
@@ -192,13 +173,7 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
             }
 
             else{
-                worm_up_wrong_ans_weight += cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_WEIGHT));
-                ++worm_up_wrong_ans;
-
-                editor.putInt("worm_up_wrong_ans", worm_up_wrong_ans);
-                editor.putInt("worm_up_wrong_ans_weight", worm_up_wrong_ans_weight);
-                editor.commit();
-
+                addError();
                 showDialog("Opps!","Your answer is wrong!");
                 nextQuestion();
             }
@@ -208,6 +183,26 @@ public class WormUpQuestionActivity extends AppCompatActivity implements View.On
             Log.d(TAG, "There is no Question");
         }
 
+    }
+
+    private void addScore()
+    {
+        ++wormUpScore;
+        wormUpScoreWeight += cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_WEIGHT));
+
+        editor.putInt(Env.sp.worm_up_score, wormUpScore);
+        editor.putInt(Env.sp.worm_up_score_weight, wormUpScoreWeight);
+        editor.commit();
+    }
+
+    private void addError()
+    {
+        ++wormUpError;
+        wormUpErrorWeight += cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_WEIGHT));
+
+        editor.putInt(Env.sp.worm_up_error, wormUpError);
+        editor.putInt(Env.sp.worm_up_error_weight, wormUpErrorWeight);
+        editor.commit();
     }
 
 

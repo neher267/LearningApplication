@@ -1,159 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    tools:context="com.neher.ecl.learningapplication.MainActivity"
+    android:background="@drawable/background"
     android:orientation="vertical"
     android:padding="15dp"
-    android:background="@drawable/background">
+    tools:context="com.neher.ecl.learningapplication.GameActivity">
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view0"
-        android:layout_gravity="right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="6dp"
+        android:layout_gravity="right"
         android:layout_marginBottom="8dp"
-        android:layout_marginRight="5dp">
+        android:layout_marginRight="5dp"
+        card_view:cardCornerRadius="6dp">
 
         <TextView
             android:id="@+id/score_id"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Score: 0"
-            android:textStyle="italic"
+            android:layout_gravity="center_vertical"
             android:background="@color/scoreColor"
+            android:padding="6dp"
+            android:text="Score: 0"
             android:textColor="@color/txtColor"
-            android:padding="6dp"/>
+            android:textStyle="italic" />
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view1"
-        android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="6dp"
-        android:layout_marginBottom="15dp">
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="15dp"
+        card_view:cardCornerRadius="6dp">
 
         <TextView
             android:id="@+id/question_id"
-            android:layout_gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Q. 5*5 = ?"
+            android:layout_gravity="center_vertical"
             android:background="@color/qsnColor"
-            android:textStyle="bold"
-            android:padding="15dp"/>
+            android:padding="15dp"
+            android:text="Q. 5*5 = ?"
+            android:textStyle="bold" />
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="6dp"
-        android:layout_marginTop="10dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        card_view:cardCornerRadius="6dp">
 
         <RadioButton
             android:id="@+id/option_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/optionColor"
-            android:text="55"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:text="55" />
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="6dp"
-        android:layout_marginTop="10dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        card_view:cardCornerRadius="6dp">
 
         <RadioButton
             android:id="@+id/option_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/optionColor"
-            android:text="25"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:text="25" />
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="6dp"
-        android:layout_marginTop="10dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        card_view:cardCornerRadius="6dp">
 
         <RadioButton
             android:id="@+id/option_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/optionColor"
-            android:text="35"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:text="35" />
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_vie1w"
-        android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="6dp"
-        android:layout_marginTop="10dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        card_view:cardCornerRadius="6dp">
 
         <RadioButton
             android:id="@+id/option_4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/optionColor"
-            android:text="45"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:text="45" />
     </android.support.v7.widget.CardView>
-
 
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_vie7"
-        android:layout_gravity="right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="6dp"
-        android:layout_marginTop="10dp"
+        android:layout_gravity="right"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        card_view:cardCornerRadius="6dp">
 
         <TextView
             android:id="@+id/continue_id"
-            android:layout_gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:background="@color/btn_color"
-            android:textColor="@color/txtColor"
+            android:padding="10dp"
             android:text="Skip"
-            android:textStyle="italic"
-            android:padding="10dp"/>
+            android:textColor="@color/txtColor"
+            android:textStyle="italic" />
     </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom" />
+    </LinearLayout>
 
 
 </LinearLayout>

@@ -5,9 +5,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.mancj.slideup.SlideUp;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -15,7 +20,8 @@ import java.util.ArrayList;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
 
     private ArrayList<Gifts> mGifts;
-    private static final String TAG = MyAdapter.class.getSimpleName();
+    private static final String TAG = "MyAdapter"; //type logt
+
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
@@ -23,6 +29,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
         public TextView mathMarks;
         public TextView giftName;
         public ImageView giftImage;
+        public ImageButton button;
+
+        LinearLayout parentLayout;
+
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -30,13 +41,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
             mathMarks = itemView.findViewById(R.id.math_mark);
             giftName = itemView.findViewById(R.id.gift_name);
             giftImage = itemView.findViewById(R.id.gift_image);
+            button = itemView.findViewById(R.id.card_option);
+            parentLayout = itemView.findViewById(R.id.parentLayout);
         }
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        Log.d(TAG, "onCreateViewHolder() calling");
+        //Log.d(TAG, "onCreateViewHolder() calling");
+
+        Log.d(TAG, "onCreateViewHolder: calling"); //type logd
 
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gift_item, parent, false);
         ViewHolder vh = new ViewHolder(itemView);
@@ -46,32 +61,43 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
 
     public MyAdapter(ArrayList<Gifts> gifts){
         mGifts = gifts;
+        Log.d(TAG, "MyAdapter() calling" + String.valueOf(mGifts.get(0).getName()));
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder() calling");
 
         Gifts gift = mGifts.get(position);
-        holder.giftName.setText("Name: Test");
-        holder.enMarks.setText("English Marks: "+String.valueOf(gift.getEn_marks()));
-        holder.mathMarks.setText("Math Marks: "+String.valueOf(gift.getMath_marks()));
+        holder.giftName.setText("Name: "+gift.getName());
+        holder.enMarks.setText("English Marks: "+gift.getEn_marks());
+        holder.mathMarks.setText("Math Marks: "+gift.getMath_marks());
 
-        String url = "http://139.162.60.218/game/public/images/1.jpg";
+        String url = "http://139.162.60.218/game/public/"+gift.getImage();
 
         Picasso.get()
                 .load(url)
                 .error(R.drawable.gift)
                 .into(holder.giftImage);
 
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: Name = "+mGifts.get(position).getName());
+            }
+        });
 
-        //Picasso.get().load("http://cdn.blcalligraphy.com/wp-content/uploads/2014/11/pinterest_badge_red-300x300.png").into(logoView);
+        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: Name = "+mGifts.get(position).getName());
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
+
         return mGifts.size();
     }
-
-
 }

@@ -99,6 +99,12 @@ public class QuestionDB extends SQLiteOpenHelper {
             cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_SUB+" = "+subject+" AND "+COL_STATUS+" = "+Env.db.error_ans+" Limit 1", null);
         }
 
+        if (!cursor.moveToFirst())
+        {
+            Log.d(TAG, "Error Question");
+            cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_SUB+" = "+subject+" AND "+COL_STATUS+" = "+Env.db.time_out+" Limit 1", null);
+        }
+
 
         return cursor;
     }

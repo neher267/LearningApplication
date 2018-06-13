@@ -4,11 +4,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,8 +22,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.mancj.slideup.SlideUp;
+import com.mancj.slideup.SlideUpBuilder;
+
+import static java.lang.Thread.sleep;
 
 public class GameActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -35,29 +46,32 @@ public class GameActivity extends AppCompatActivity
     private TextView question;
     private QuestionDB questionDB;
     private Cursor cursor;
+    private ProgressBar progressBar;
 
-    private int game_score;
-    private int game_error;
-
+    private int game_score_math, game_score_en;
+    private int game_error_math, game_error_en;
     private int subject;
-
+    private int solveTime;
     private Connectivity connectivity;
-
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
 
     private static final String TAG = GameActivity.class.getSimpleName();
+
+    private int time;
+
+    //private View slideView;
+    //private SlideUp slideUp;
+
+    private boolean clicked = false;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        connectivity = new Connectivity(this);
-        sharedPref = this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
-
-
-        subject = sharedPref.getInt(Env.sp.subject, 1);
+        setup();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -76,36 +90,56 @@ public class GameActivity extends AppCompatActivity
         TextView userNameView = headerView.findViewById(R.id.user_name_view);
         TextView userMobileView = headerView.findViewById(R.id.user_mobile_view);
 
+        scoreView.setText("Score: "+ getTotalScore());
+
         userNameView.setText(sharedPref.getString(Env.sp.user_name, ""));
         userMobileView.setText(sharedPref.getString(Env.sp.user_mobile, ""));
 
-
-
-        editor = sharedPref.edit();
-
-        game_score = sharedPref.getInt(Env.sp.game_score, 0);
-        game_error = sharedPref.getInt(Env.sp.game_error, 0);
-
-        question = findViewById(R.id.question_id);
-        scoreView = findViewById(R.id.score_id);
-        option_1 = findViewById(R.id.option_1);
-        option_2 = findViewById(R.id.option_2);
-        option_3 = findViewById(R.id.option_3);
-        option_4 = findViewById(R.id.option_4);
-        continue_btn = findViewById(R.id.continue_id);
-
-        scoreView.setText("Score: "+String.valueOf(game_score));
 
         option_1.setOnClickListener(this);
         option_2.setOnClickListener(this);
         option_3.setOnClickListener(this);
         option_4.setOnClickListener(this);
-        continue_btn.setOnClickListener(this);
 
+        continue_btn.setOnClickListener(this);
+        //slideView = findViewById(R.id.slideView);
+
+        nextQuestion();
+        //playTimeCount();
+    }
+
+    private void setup(){
+        connectivity = new Connectivity(this);
+        sharedPref = this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
+        editor = sharedPref.edit();
+
+        game_score_math = sharedPref.getInt(Env.sp.game_score_math, 0);
+        game_score_en = sharedPref.getInt(Env.sp.game_score_en, 0);
+
+        game_error_math = sharedPref.getInt(Env.sp.game_error_math, 0);
+        game_error_en = sharedPref.getInt(Env.sp.game_error_en, 0);
+
+        subject = sharedPref.getInt(Env.sp.subject, 1);
+
+        scoreView = findViewById(R.id.score_id);
+        question = findViewById(R.id.question_id);
+        option_1 = findViewById(R.id.option_1);
+        option_2 = findViewById(R.id.option_2);
+        option_3 = findViewById(R.id.option_3);
+        option_4 = findViewById(R.id.option_4);
+        continue_btn = findViewById(R.id.continue_id);
+        progressBar = findViewById(R.id.progressBar);
         questionDB = new QuestionDB(this);
         questionDB.getWritableDatabase();
-        nextQuestion();
+        solveTime = 10; //seconds
+        time = 0;
     }
+
+    private int getTotalScore(){
+        return game_score_math + game_score_en;
+    }
+
+
 
     @Override
     public void onBackPressed() {
@@ -169,8 +203,8 @@ public class GameActivity extends AppCompatActivity
 
             editor.putString(Env.sp.access_token, "no");
             editor.commit();
-            finish();
             startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -180,6 +214,9 @@ public class GameActivity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
+
+        clicked = true;
+
         if(view.getId() == R.id.option_1){
             Log.d(TAG, "Option one is clicked");
             checkResult("a");
@@ -204,34 +241,111 @@ public class GameActivity extends AppCompatActivity
         }else if(view.getId() == R.id.continue_id){
             Log.d(TAG, "Option skip button is clicked");
             checkResult("skip");
+
+            /*slideView.setVisibility(View.VISIBLE);
+            slideUp = new SlideUpBuilder(slideView)
+                    .withStartState(SlideUp.State.HIDDEN)
+                    .withStartGravity(Gravity.BOTTOM)
+
+                    //.withSlideFromOtherView(anotherView)
+                    //.withGesturesEnabled()
+                    //.withHideSoftInputWhenDisplayed()
+                    //.withInterpolator()
+                    //.withAutoSlideDuration()
+                    //.withLoggingEnabled()
+                    //.withTouchableAreaPx()
+                    //.withTouchableAreaDp()
+                    //.withListeners()
+                    //.withSavedState()
+                    .build();*/
         }
     }
 
-
     public void nextQuestion()
     {
+
         cursor = questionDB.getQuestion(subject);
 
         if (cursor.moveToFirst()) {
-            String qsn = cursor.getString(cursor.getColumnIndex(QuestionDB.COL_QUESTION));
-            question.setText(qsn);
-            option_1.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_A)));
-            option_2.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_B)));
-            option_3.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_C)));
-            option_4.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_D)));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    question.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_QUESTION)));
+                    option_1.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_A)));
+                    option_2.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_B)));
+                    option_3.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_C)));
+                    option_4.setText(cursor.getString(cursor.getColumnIndex(QuestionDB.COL_OPTION_D)));
+                }
+            });
 
-            Log.d(TAG, qsn);
-        }
+
+            new Thread(new MyThread(10)).start();
+
+         }
         else {
-            finish();
             Log.d(TAG, "There is now row");
             startActivity(new Intent(this, ThankYouActivity.class));
+            finish();
+
+        }
+    }
+
+    public class MyThread implements Runnable{
+        int time;
+
+        MyThread(int time){
+            this.time = time;
+        }
+
+        @Override
+        public void run() {
+            int ml = solveTime * 1000; // 10*1000 = 10000
+            ml = ml/100; // 100
+            time = 0;
+
+            for (int i = 1; i<=100; i++)
+            {
+                if (clicked){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(100);
+
+                        }
+                    });
+                    clicked = false;
+                    break;
+                }
+                else {
+                    time = i;
+                    try {
+                        sleep(ml);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(time);
+                        }
+                    });
+                }
+
+                Log.d(TAG, "run: i = "+i);
+            }
+
+            if (time == 100){
+                questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.db.time_out);
+                nextQuestion();
+            }
+
         }
     }
 
 
 
     public void checkResult(String user_ans){
+
         Log.d(TAG, user_ans);
 
         if(cursor.moveToFirst())
@@ -241,11 +355,10 @@ public class GameActivity extends AppCompatActivity
 
             if(ans.equals(user_ans))
             {
+                playSuccessMusic();
+                addScore();
                 questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.db.right_ans);
-                game_score++;
-                editor.putInt(Env.sp.game_score, game_score);
-                editor.commit();
-                scoreView.setText("Score: "+game_score);
+                scoreView.setText("Score: "+ getTotalScore());
                 showDialog(getDialogTitle(), "Your answer is correct");
                 nextQuestion();
             }
@@ -256,9 +369,8 @@ public class GameActivity extends AppCompatActivity
                 nextQuestion();
             }
             else{
-                game_error++;
-                editor.putInt(Env.sp.game_error, game_error);
-                editor.commit();
+                playErrorMusic();
+                addError();
                 questionDB.update(cursor.getInt(cursor.getColumnIndex(QuestionDB.COL_ID)), Env.db.error_ans);
                 showDialog(getDialogTitle(),"Your answer is wrong!");
                 nextQuestion();
@@ -270,6 +382,61 @@ public class GameActivity extends AppCompatActivity
         }
 
     }
+
+    private void playSuccessMusic()
+    {
+        MediaPlayer player = MediaPlayer.create(this, R.raw.hand_clap);
+        player.setLooping(false);
+        player.start();
+    }
+
+    private void playErrorMusic()
+    {
+        MediaPlayer player = MediaPlayer.create(this, R.raw.oohhh_no);
+        player.setLooping(false);
+        player.start();
+    }
+
+    private void playTimeCount()
+    {
+        MediaPlayer player = MediaPlayer.create(this, R.raw.time_count);
+        player.setLooping(true);
+        player.start();
+    }
+
+
+    private void addScore()
+    {
+        if(subject == Env.sp.subject_en_val)
+        {
+            game_score_en++;
+            editor.putInt(Env.sp.game_score_en, game_score_en);
+            editor.commit();
+        }
+        else
+        {
+            game_score_math++;
+            editor.putInt(Env.sp.game_score_math, game_score_math);
+            editor.commit();
+        }
+    }
+
+    private void addError()
+    {
+        if(subject == Env.sp.subject_en_val)
+        {
+            game_error_en++;
+            editor.putInt(Env.sp.game_error_en, game_error_en);
+            editor.commit();
+        }
+        else
+        {
+            game_error_math++;
+            editor.putInt(Env.sp.game_error_math, game_error_math);
+            editor.commit();
+        }
+    }
+
 
     public String getDialogTitle()
     {
@@ -293,4 +460,5 @@ public class GameActivity extends AppCompatActivity
         builder.create();
         builder.show();
     }
+
 }

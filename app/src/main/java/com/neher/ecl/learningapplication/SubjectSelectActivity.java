@@ -36,10 +36,9 @@ public class SubjectSelectActivity extends AppCompatActivity implements View.OnC
             editor.putInt(Env.sp.subject, Env.sp.subject_math_val);
         }
 
-        finish();
-
         editor.commit();
 
         startActivity(new Intent(SubjectSelectActivity.this, GameActivity.class));
+        finish();
     }
 }

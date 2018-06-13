@@ -50,7 +50,7 @@ public class UpdateUserInfo {
             protected Map<String, String> getParams() throws AuthFailureError {
                 SharedPreferences preferences = context.getSharedPreferences(Env.sp.sp_name, Context.MODE_PRIVATE);
                 Map<String, String> map = new HashMap<>();
-                map.put("game_score", String.valueOf(preferences.getInt(Env.sp.game_score, 0)));
+                //map.put("game_score", String.valueOf(preferences.getInt(Env.sp.game_score, 0)));
                 return map;
             }
 

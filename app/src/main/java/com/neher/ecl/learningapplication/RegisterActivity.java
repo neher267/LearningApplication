@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -46,6 +47,7 @@ public class RegisterActivity extends AppCompatActivity{
     private EditText mPasswordView;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
+    private NotificationManagerCompat notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +92,9 @@ public class RegisterActivity extends AppCompatActivity{
                 attemptRegistration();
             }
         });
+
+
+        notificationManager = NotificationManagerCompat.from(this);
     }
 
 
@@ -166,12 +171,17 @@ public class RegisterActivity extends AppCompatActivity{
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String,String> params = new HashMap<String, String>();
+                    SharedPreferences sharedPref = RegisterActivity.this.getSharedPreferences(Env.sp.sp_name, Context.MODE_PRIVATE);
 
                     params.put("username", mobile);
                     params.put("name", name);
                     params.put("gender", gender);
                     params.put("dob", dob);
                     params.put("password", password);
+                    params.put("wormup_score", String.valueOf(sharedPref.getInt(Env.sp.worm_up_score, 0)));
+                    params.put("wormup_score_weight", String.valueOf(sharedPref.getInt(Env.sp.worm_up_score_weight, 0)));
+                    params.put("wormup_error", String.valueOf(sharedPref.getInt(Env.sp.worm_up_error, 0)));
+                    params.put("wormup_error_weight", String.valueOf(sharedPref.getInt(Env.sp.worm_up_error_weight, 0)));
 
                     return params;
                 }

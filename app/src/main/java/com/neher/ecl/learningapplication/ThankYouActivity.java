@@ -16,6 +16,8 @@ public class ThankYouActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
         score = findViewById(R.id.score);
-        score.setText("Score: "+sharedPref.getInt(Env.sp.game_score, 0));
+        int game_score = sharedPref.getInt(Env.sp.game_score_en, 0) + sharedPref.getInt(Env.sp.game_score_math, 0);
+
+        score.setText("Score: "+game_score);
     }
 }

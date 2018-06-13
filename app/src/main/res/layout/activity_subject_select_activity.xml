@@ -11,30 +11,6 @@ android:background="@drawable/background">
 
 <android.support.v7.widget.CardView
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_view3"
-    android:layout_gravity="center"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    card_view:cardCornerRadius="15dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    >
-
-    <TextView
-        android:gravity="center"
-        android:layout_gravity="center_vertical"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text="Start"
-        android:textColor="@color/cardview_light_background"
-        android:textStyle="italic"
-        android:padding="15dp"
-        android:background="@color/scoreColor"/>
-</android.support.v7.widget.CardView>
-
-<android.support.v7.widget.CardView
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_vie1w"
     android:layout_gravity="center"
     android:layout_width="match_parent"

@@ -96,7 +96,10 @@ public class LoginActivity extends AppCompatActivity{
                                 editor.putString(Env.sp.user_name, object.getString("name"));
                                 editor.putString(Env.sp.user_dob, object.getString("dob"));
                                 editor.putString(Env.sp.user_mobile, object.getString("mobile"));
-                                editor.putInt(Env.sp.game_score, object.getInt("marks"));
+                                editor.putInt(Env.sp.game_score_math, object.getInt("math_score"));
+                                editor.putInt(Env.sp.game_score_en, object.getInt("en_score"));
+                                editor.putInt(Env.sp.game_error_math, object.getInt("math_error"));
+                                editor.putInt(Env.sp.game_error_en, object.getInt("en_error"));
                                 editor.putString(Env.sp.access_token, "yes");
 
                                 editor.commit();
