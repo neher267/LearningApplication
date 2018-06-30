@@ -113,7 +113,10 @@ public class LoginActivity extends AppCompatActivity{
                                 Log.d(TAG, "Authentication success!");
 
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                Log.d(TAG, "onResponse: jesson Exception: "+e.getMessage());
+
+                            } catch(NullPointerException e){
+                                Log.d(TAG, "onResponse: exception: "+e.getMessage());
                             }
                         }
                     },

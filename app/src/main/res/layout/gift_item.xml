@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:padding="2dp"
     android:orientation="vertical"
-    android:id="@+id/parentLayout">
+    tools:padding="2dp">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -30,10 +30,10 @@
                     android:id="@+id/gift_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
                     android:text="Name"
                     android:textColor="@color/scoreColor"
-                    android:textStyle="bold"
-                    android:layout_alignParentLeft="true"/>
+                    android:textStyle="bold" />
 
                 <ImageButton
                     android:id="@+id/card_option"
@@ -48,27 +48,26 @@
             <ImageView
                 android:id="@+id/gift_image"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"/>
-
+                android:layout_height="200dp" />
 
 
             <TextView
                 android:id="@+id/en_mark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="3dp"
                 android:text="English:"
                 android:textColor="@color/scoreColor"
-                android:textStyle="bold"
-                android:padding="3dp"                />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/math_mark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
                 android:text="Math"
                 android:textColor="@color/scoreColor"
-                android:textStyle="bold"
-                android:paddingLeft="3dp"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
 

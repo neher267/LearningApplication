@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:id="@+id/slideView"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
-    android:id="@+id/slideView"
+    android:background="@color/cardview_shadow_start_color"
     android:gravity="center_horizontal"
-    android:background="@color/cardview_shadow_start_color">
+    android:orientation="vertical">
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Neher Ranjan Halder"
+        android:gravity="center"
         android:padding="10dp"
-        android:textColor="@color/optionColor"
-        android:gravity="center"/>
+        android:text="Neher Ranjan Halder"
+        android:textColor="@color/optionColor" />
 
     <Button
+        android:id="@+id/slideButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/slideButton"
-        android:text="ok"/>
+        android:text="ok" />
 
 </LinearLayout>

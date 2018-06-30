@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#FDD835</color>
+    <color name="colorPrimaryDark">#F9A825</color>
+    <color name="colorAccent">#EE6C4D</color>
     <color name="qsnColor">#F5D32A</color>
     <color name="btn_color">#A20B89</color>
     <color name="txtColor">#FFF</color>
     <color name="optionColor">#A98F17</color>
     <color name="inputColor">#457E37</color>
     <color name="scoreColor">#49377E</color>
+
+
 </resources>

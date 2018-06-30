@@ -95,6 +95,7 @@ public class GameActivity extends AppCompatActivity
         userNameView.setText(sharedPref.getString(Env.sp.user_name, ""));
         userMobileView.setText(sharedPref.getString(Env.sp.user_mobile, ""));
 
+        progressBar.setVisibility(View.VISIBLE);
 
         option_1.setOnClickListener(this);
         option_2.setOnClickListener(this);
@@ -106,6 +107,8 @@ public class GameActivity extends AppCompatActivity
 
         nextQuestion();
         //playTimeCount();
+
+
     }
 
     private void setup(){
@@ -341,8 +344,6 @@ public class GameActivity extends AppCompatActivity
 
         }
     }
-
-
 
     public void checkResult(String user_ans){
 

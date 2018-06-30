@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.neher.ecl.learningapplication.ThankYouActivity"
-    android:background="@drawable/background"
+    android:background="@color/colorAccent"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:padding="10dp">
 
 
     <TextView
@@ -17,11 +18,9 @@
         android:textColor="@color/scoreColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:text="Socore"
-        tools:layout_editor_absoluteX="38dp"
-        tools:layout_editor_absoluteY="27dp"
-        android:gravity="center"/>
+        android:text="Score"
+        android:gravity="center"
+        android:background="@drawable/skip_background"/>
     <TextView
         android:id="@+id/textView"
         android:padding="20dp"

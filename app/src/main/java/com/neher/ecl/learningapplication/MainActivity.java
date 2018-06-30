@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "neher")
+        /*NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "neher")
                 .setSmallIcon(R.drawable.ic_menu_camera)
                 .setContentTitle("Test Title")
                 .setContentText("Hello World!")
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
 
-        managerCompat.notify(1124578, builder.build());
+        managerCompat.notify(1124578, builder.build());*/
 
 
         sharedPref= this.getSharedPreferences(Env.sp.sp_name, MODE_PRIVATE);
@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "User Name: "+sharedPref.getString(Env.sp.user_mobile, "0"));
         Log.d(TAG, "User Password: "+sharedPref.getString(Env.sp.user_password, "0"));
 
-        MyNotifications notifications = new MyNotifications(this);
+        /*MyNotifications notifications = new MyNotifications(this);
 
-        notifications.sentNotification();
+        notifications.sentNotification();*/
 
         if(!accessToken.equals("no"))
         {
@@ -133,4 +133,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         snackbar.show();
     }
+
 }
